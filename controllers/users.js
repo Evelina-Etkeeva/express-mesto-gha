@@ -24,11 +24,19 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserId = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.status(200).send(user))
+    .then((user) => {
+      if (!user) {
+        res
+          .status(404)
+          .send({ message: "Запрашиваемый пользователь не найден" });
+        return;        
+      }
+      res.status(200).send(user);
+    })
     .catch((err) => {
       if (err.name === "CastError") {
         res
-          .status(404)
+          .status(400)
           .send({ message: "Запрашиваемый пользователь не найден" });
         return;
       }
