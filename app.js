@@ -12,14 +12,17 @@ app.use(bodyParser.json());
 mongoose.connect("mongodb://localhost:27017/mestodb", {});
 
 app.use((req, res, next) => {
-    req.user = {
-      _id: "62e6621357b4316f8637dd64", // вставьте сюда _id созданного в предыдущем пункте пользователя
-    };
-  
-    next();
-  });
+  req.user = {
+    _id: "62e6621357b4316f8637dd64", // вставьте сюда _id созданного в предыдущем пункте пользователя
+  };
+
+  next();
+});
 app.use("/", require("./routes/users.js"));
 app.use("/", require("./routes/cards.js"));
+app.use((req, res) => {
+  res.status(404).send({ message: "Указанный путь не найден" });
+});
 
 app.listen(PORT, () => {
   // Если всё работает, консоль покажет, какой порт приложение слушает
