@@ -16,7 +16,10 @@ module.exports.createUser = (req, res, next) => {
     email,
     password,
   } = req.body;
-
+  if (password.length < 4) {
+    next(new BadRequestError('Пароль должен содержать не менее 4 символов'));
+    return;
+  }
   bcrypt.hash(password, 10)
     .then((hash) => User.create({
       name,
