@@ -18,8 +18,6 @@ const app = express();
 app.use(bodyParser.json());
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {});
-// обработка ошибок celebrate
-app.use(errors());
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
@@ -45,6 +43,8 @@ app.use((req, res, next) => {
   next(new NotFoundError('Указанный путь не найден'));
 });
 
+// обработка ошибок celebrate
+app.use(errors());
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
   const { statusCode = 500, message } = err;
