@@ -1,9 +1,9 @@
 require('dotenv').config();
 const express = require('express');
-const { errors } = require('celebrate');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
 const auth = require('./middlewares/auth');
 const users = require('./routes/users');
 const cards = require('./routes/cards');
@@ -16,6 +16,8 @@ const { PORT = 3000 } = process.env;
 const app = express();
 // для обработки JSON-запросов
 app.use(bodyParser.json());
+// для обработки кук
+app.use(cookieParser());
 // подключаемся к серверу mongo
 mongoose.connect('mongodb://localhost:27017/mestodb', {});
 
