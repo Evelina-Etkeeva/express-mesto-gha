@@ -8,6 +8,16 @@ const ConflictError = require('../errors/ConflictErr');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
 
+function getCleanUser(user) {
+  return {
+    name: user.name,
+    about: user.about,
+    avatar: user.avatar,
+    email: user.email,
+    _id: user._id,
+  };
+}
+
 module.exports.createUser = (req, res, next) => {
   const {
     name,
@@ -29,13 +39,7 @@ module.exports.createUser = (req, res, next) => {
       password: hash,
     }))
     .then((user) => {
-      const saveUser = {
-        name: user.name,
-        about: user.about,
-        avatar: user.avatar,
-        email: user.email,
-        _id: user._id,
-      };
+      const saveUser = getCleanUser(user);
       res.send(saveUser);
     })
     .catch((err) => {
@@ -63,10 +67,8 @@ module.exports.getMe = (req, res, next) => {
 
 module.exports.getUserId = (req, res, next) => {
   User.findById(req.params.userId)
+    .orFail(new NotFoundError('Запрашиваемый пользователь не найден'))
     .then((user) => {
-      if (!user) {
-        throw new NotFoundError('Запрашиваемый пользователь не найден');
-      }
       res.send(user);
     })
     .catch((err) => {
@@ -136,7 +138,8 @@ module.exports.login = (req, res, next) => {
         maxAge: 3600000 * 24 * 7,
         httpOnly: true,
       });
-      res.send(user);
+      const saveUser = getCleanUser(user);
+      res.send(saveUser);
     })
     .catch((err) => {
       next(new UnauthorizedError(err.message));
